@@ -1,6 +1,6 @@
 import React from 'react';
 
-const page = () => {
+const AboutPage = () => {
     return (
         <div className='min-h-screen'>
             this is about page section and details on about on this company????
@@ -8,4 +8,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default AboutPage;

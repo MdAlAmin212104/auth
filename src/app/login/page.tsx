@@ -1,6 +1,6 @@
 import React from 'react';
 
-const page = () => {
+const LoginPage = () => {
     return (
         <div className='min-h-screen'>
             this is login page section
@@ -8,4 +8,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default LoginPage;

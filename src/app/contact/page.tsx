@@ -1,6 +1,6 @@
 import React from 'react';
 
-const page = () => {
+const ContactPage = () => {
     return (
         <div className='min-h-screen'>
             this is contact page
@@ -8,4 +8,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default ContactPage;
