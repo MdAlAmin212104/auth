@@ -96,7 +96,7 @@ const LoginPage = () => {
               </button>
             </div>
             <p className="text-xs text-center sm:px-6 dark:text-gray-600">
-              Don't have an account?
+              Don`t have an account?
               <Link
                 href='/singup'
                 className="underline dark:text-gray-800"

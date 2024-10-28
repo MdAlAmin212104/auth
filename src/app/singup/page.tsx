@@ -8,7 +8,7 @@ type Inputs = {
     email: string;
     password: number;
 };
-const singUpPage = () => {
+const SingUpPage = () => {
   const {
     register,
     handleSubmit,
@@ -113,4 +113,4 @@ const singUpPage = () => {
   );
 };
 
-export default singUpPage;
+export default SingUpPage;
