@@ -4,9 +4,9 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
-    name: string;
-    email: string;
-    password: number;
+  name: string;
+  email: string;
+  password: number;
 };
 const SingUpPage = () => {
   const {
