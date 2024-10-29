@@ -14,7 +14,28 @@ const SingUpPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (user) => {
+    try {
+      const res = await fetch('http://localhost:3000/singup/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to register user');
+      }
+  
+      const data = await res.json();
+      console.log('User registered:', data);
+  
+    } 
+    catch (error) {
+      console.error('Error:', error);
+    }
+  } 
 
   return (
     <div className="w-full container mx-auto max-w-md p-8 space-y-3 rounded-xl dark:bg-gray-50 dark:text-gray-800">
