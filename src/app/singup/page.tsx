@@ -6,7 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 type Inputs = {
   name: string;
   email: string;
-  password: number;
+  password: string;
 };
 const SingUpPage = () => {
   const {
