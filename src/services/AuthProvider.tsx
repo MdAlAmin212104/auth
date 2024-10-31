@@ -1,4 +1,5 @@
 'use client';
+import { SessionProvider } from 'next-auth/react';
 import React, { ReactNode } from 'react';
 
 type AuthProviderProps = {
@@ -7,9 +8,9 @@ type AuthProviderProps = {
 
 const AuthProvider = ({children}: AuthProviderProps) => {
     return (
-        <div>
+        <SessionProvider>
             {children}
-        </div>
+        </SessionProvider>
     );
 };
 

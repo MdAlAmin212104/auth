@@ -1,28 +1,38 @@
 "use client";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import React from "react";
+
+
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from "react-hook-form";
 
+type Inputs = {
+  email: string;
+  password: string;
+};
+
 const LoginPage = () => {
+  const router = useRouter();
+  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
 
-  type Inputs = {
-    email: string;
-    password: number;
-  };
+  const onSubmit: SubmitHandler<Inputs> = async (userData) => {
+    const { email, password } = userData;
 
+    try {
+      const res = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (userData) =>{
-    const res = signIn('credentials', {
-      userData,
-      redirect: false,
-    })
-    console.log(res);
+      if (res?.status === 200) {
+        router.push('/'); // Redirect to home page on successful sign-in
+      } else {
+        console.error('Sign-in failed', res?.error); // Log the error message
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error); // Handle any errors that occur during sign-in
+    }
   };
 
 

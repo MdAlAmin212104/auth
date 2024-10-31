@@ -1,16 +1,7 @@
 import { connect } from "@/lib/connectDB";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-
-// Mock function to authenticate user
-async function authenticateUser(email: string, password: string): Promise<any> {
-    // Replace this with your real authentication logic (e.g., database check)
-    if (email === "user@example.com" && password === "password123") {
-        return { id: 1, name: "John Doe", email: "user@example.com" };
-    }
-    return null;
-}
+import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
     session: {
@@ -23,27 +14,34 @@ const handler = NextAuth({
                 email: {},
                 password: {},
             },
-            async authorize(credentials) {
+            async authorize(credentials: { email: string; password: string } | null) {
                 if (!credentials) return null;
-
+            
                 const { email, password } = credentials;
-                if(!email || !password) return null;
-
-                const Db = (await connect())!;
-                const currentUser = await Db.collection('users').findOne({ email });
-
-                
-                if (!currentUser) {
+                if (!email || !password) return null;
+            
+                const Db = await connect();
+                if (!Db) {
+                    console.error("Failed to connect to the database");
                     return null;
                 }
-                const user = await authenticateUser(email, password);
-
-                if (user) {
-                    return user; // Return user object if authentication succeeds
-                } else {
-                    return null; // Return null to indicate failed authentication
+            
+                const currentUser = await Db.collection('users').findOne({ email });
+                if (!currentUser) {
+                    console.error("User not found");
+                    return null;
                 }
-            },
+            
+                const passwordMatched = await bcrypt.compare(password, currentUser.password);
+                if (!passwordMatched) {
+                    console.error("Password does not match");
+                    return null;
+                }
+            
+                // Ensure no sensitive data is sent with the user object
+                const { password: _, ...sanitizedUser } = currentUser;
+                return sanitizedUser;
+            }
         })
     ],
     callbacks: {},
