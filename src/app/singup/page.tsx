@@ -2,34 +2,51 @@
 import Link from "next/link";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import bcrypt from "bcryptjs";
 
 type Inputs = {
   name: string;
   email: string;
   password: string;
 };
+
+
 const SingUpPage = () => {
+
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (user) => {
+    const name = user.name;
+    const email = user.email;
+    const hashedPassword = bcrypt.hashSync(user.password, 10);
+    const newUser = {
+      name,
+      email,
+      password: hashedPassword,
+    }
     try {
       const res = await fetch('http://localhost:3000/singup/api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(user)
+        body: JSON.stringify(newUser)
       });
+
+
   
       if (!res.ok) {
         throw new Error('Failed to register user');
       }
   
       const data = await res.json();
-      console.log('User registered:', data);
+      if(data.user.insertedId){
+        window.location.href = '/';
+      }
   
     } 
     catch (error) {

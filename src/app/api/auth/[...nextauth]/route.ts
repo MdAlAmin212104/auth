@@ -1,11 +1,10 @@
 import { connect } from "@/lib/connectDB";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {Db} from 'mongodb'
 
 
 // Mock function to authenticate user
-async function authenticateUser(email: string, password: string): Promise<User | null> {
+async function authenticateUser(email: string, password: string): Promise<any> {
     // Replace this with your real authentication logic (e.g., database check)
     if (email === "user@example.com" && password === "password123") {
         return { id: 1, name: "John Doe", email: "user@example.com" };
@@ -30,9 +29,9 @@ const handler = NextAuth({
                 const { email, password } = credentials;
                 if(!email || !password) return null;
 
+                const Db = (await connect())!;
+                const currentUser = await Db.collection('users').findOne({ email });
 
-                const db: Mogo = await connect();
-                const currentUser = await db.collection('users').findOne({ email });
                 
                 if (!currentUser) {
                     return null;
