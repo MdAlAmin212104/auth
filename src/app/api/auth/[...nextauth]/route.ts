@@ -52,39 +52,42 @@ const handler = NextAuth({
         }),
         GitHubProvider({
             clientId: process.env.NEXT_PUBLIC_GITHUB_ID as string,
-            clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET as string
+            clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET as string,
+            authorization: {
+                params: {
+                    scope: "read:user user:email",
+                },
+            },
         })
 
     ],
     callbacks: {
-        async signIn({ user, account }: { user: User | AdapterUser; account: Account | null }): Promise<boolean | string> {
-            if (account?.provider === "Google" || account?.provider === "github") {
-                const { name, email, image } = user; // Assuming `user` holds these properties
+        async signIn({ user, account }: { user: User | AdapterUser; account: Account | null }): Promise<boolean> {
+            if (account?.provider === "google" || account?.provider === "github") {
+                const { id, email, name, image } = user; // Assuming `user` holds these properties
+                console.log("google or github account", id, name, email, image);
     
                 try {
                     const db = await connect();
-                    
-                    // Handle case if db is undefined
-                    if (!db) {
-                        console.error("Database connection failed.");
+                    if(!db){
+                        console.error("Failed to connect to the database");
                         return false; // Deny sign-in if database connection fails
                     }
-    
-                    const userCollection = db.collection("users");
-    
-                    // Check if the user already exists
-                    const userExists = await userCollection.findOne({ email });
-    
-                    // If the user does not exist, insert a new record
+
+                    const userCollection = db.collection('users');
+                    const userExists = await userCollection.findOne(email ? { email } : { id }); // Use `await` here
+
                     if (!userExists) {
-                        await userCollection.insertOne({ name, email, image });
+                        await userCollection.insertOne(await userCollection.insertOne({ id, name, email, image, provider: account.provider, createdAt: new Date(),}));
                     }
-                    return true; // Allow sign-in
+                    
+                    return true; // Allow sign-in if the process is successful
                 } catch (error) {
                     console.error("Error during sign-in:", error);
                     return false; // Deny sign-in on error
                 }
             }
+
             return true; // Allow sign-in for other providers
         },
     },
@@ -93,4 +96,4 @@ const handler = NextAuth({
     }
 })
 
-export {handler as GET, handler as POST}
+export { handler as GET, handler as POST }
