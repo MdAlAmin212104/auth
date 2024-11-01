@@ -1,8 +1,16 @@
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const SocialLogin = () => {
-    const handleClick = (element: any) => {
-        console.log(element);
+    const session = useSession();
+    const router = useRouter();
+    const handleClick = (provider: any) => {
+        const res = signIn(provider, {redirect: false});
+    }
+
+    if(session.status === 'authenticated'){
+        router.push('/')
     }
     return (
         <div className="flex justify-center space-x-4">
